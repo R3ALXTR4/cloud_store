@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLOUD STORE — Buy &amp; Sell on WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cloud-bg:#F4F7FB;
+    --ink:#12213D;
+    --ink-soft:#4B5875;
+    --amber:#FFB020;
+    --amber-deep:#E8930A;
+    --sky-mid:#3A5A94;
+    --card-bg:#FFFFFF;
+    --border:#E3E9F2;
+    --whatsapp:#25D366;
+    --whatsapp-deep:#1DA851;
+    --font-display:'Baloo 2', sans-serif;
+    --font-body:'Work Sans', sans-serif;
+    --font-mono:'Space Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cloud-bg);color:var(--ink);font-family:var(--font-body);}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  /* ---------- HEADER ---------- */
+  header.site{
+    position:sticky;top:0;z-index:50;
+    background:rgba(244,247,251,0.9);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    max-width:1180px;margin:0 auto;padding:14px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .wordmark{
+    font-family:var(--font-display);font-weight:800;font-size:22px;
+    letter-spacing:0.5px;color:var(--ink);display:flex;align-items:center;gap:8px;
+  }
+  .wordmark .puff{
+    width:14px;height:14px;border-radius:50%;background:var(--amber);
+    box-shadow:10px 0 0 -2px var(--sky-mid);
+  }
+  nav.categories{
+    display:flex;gap:8px;overflow-x:auto;flex:1;justify-content:center;
+    scrollbar-width:none;
+  }
+  nav.categories::-webkit-scrollbar{display:none;}
+  .chip{
+    font-family:var(--font-body);font-weight:600;font-size:13.5px;
+    padding:8px 16px;border-radius:999px;border:1px solid var(--border);
+    background:#fff;color:var(--ink-soft);white-space:nowrap;cursor:pointer;
+    transition:all .18s ease;
+  }
+  .chip:hover{border-color:var(--sky-mid);color:var(--sky-mid);}
+  .chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .sell-btn{
+    font-family:var(--font-body);font-weight:600;font-size:14px;
+    background:var(--amber);color:var(--ink);border:none;border-radius:999px;
+    padding:10px 18px;cursor:pointer;white-space:nowrap;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .sell-btn:hover{background:var(--amber-deep);transform:translateY(-1px);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:72px 24px 96px;text-align:center;
+    background:linear-gradient(180deg,#EAF1FB 0%, var(--cloud-bg) 100%);
+  }
+  .hero .drift{
+    position:absolute;border-radius:50%;filter:blur(2px);opacity:.55;
+    background:radial-gradient(circle at 30% 30%, #ffffff, #dbe6f5 70%);
+  }
+  .hero .drift.d1{width:180px;height:70px;top:20px;left:-60px;animation:drift 38s linear infinite;}
+  .hero .drift.d2{width:130px;height:52px;top:110px;right:-40px;animation:drift 46s linear infinite reverse;}
+  .hero .drift.d3{width:90px;height:38px;bottom:10px;left:20%;animation:drift 30s linear infinite;}
+  @keyframes drift{ from{transform:translateX(0);} to{transform:translateX(60px);} }
+  @media (prefers-reduced-motion:reduce){ .hero .drift{animation:none;} }
+
+  .hero h1{
+    position:relative;z-index:1;
+    font-family:var(--font-display);font-weight:800;
+    font-size:clamp(38px,6vw,64px);line-height:1.02;margin:0 0 14px;
+    color:var(--ink);
+  }
+  .hero h1 span{color:var(--sky-mid);}
+  .hero p.sub{
+    position:relative;z-index:1;
+    max-width:520px;margin:0 auto 28px;color:var(--ink-soft);
+    font-size:16.5px;line-height:1.5;
+  }
+  .hero .search{
+    position:relative;z-index:1;max-width:460px;margin:0 auto;
+    display:flex;background:#fff;border:1px solid var(--border);border-radius:14px;
+    padding:6px;box-shadow:0 10px 30px -12px rgba(18,33,61,0.18);
+  }
+  .hero .search input{
+    flex:1;border:none;outline:none;padding:12px 14px;font-family:var(--font-body);
+    font-size:15px;background:transparent;color:var(--ink);
+  }
+  .hero .search button{
+    background:var(--ink);color:#fff;border:none;border-radius:9px;
+    padding:0 20px;font-family:var(--font-body);font-weight:600;cursor:pointer;
+  }
+
+  /* ---------- CLOUD SHELF DIVIDER ---------- */
+  .cloud-shelf{
+    height:42px;
+    background:var(--card-bg);
+    -webkit-mask-image: radial-gradient(circle at 21px 0, transparent 21px, black 21.5px);
+    mask-image: radial-gradient(circle at 21px 0, transparent 21px, black 21.5px);
+    -webkit-mask-size:42px 42px; mask-size:42px 42px;
+    -webkit-mask-repeat:repeat-x; mask-repeat:repeat-x;
+    -webkit-mask-position: 10px 0; mask-position:10px 0;
+  }
+
+  /* ---------- LISTINGS ---------- */
+  main{background:var(--card-bg);}
+  .listings-wrap{max-width:1180px;margin:0 auto;padding:44px 24px 100px;}
+  .listings-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+  .listings-head h2{font-family:var(--font-display);font-size:26px;margin:0;font-weight:700;}
+  .count-tag{font-family:var(--font-mono);font-size:13px;color:var(--ink-soft);}
+
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;
+  }
+  .card{
+    background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;
+    display:flex;flex-direction:column;
+    transition:transform .18s ease, box-shadow .18s ease;
+    animation:rise .5s ease both;
+  }
+  @keyframes rise{ from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+  .card:hover{transform:translateY(-4px);box-shadow:0 16px 30px -18px rgba(18,33,61,0.28);}
+  .card .thumb{
+    height:150px;display:flex;align-items:center;justify-content:center;
+    font-size:44px;background:linear-gradient(135deg,#EEF3FB,#E4EBF7);
+  }
+  .card .body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card .cat{
+    font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--sky-mid);
+  }
+  .card h3{margin:0;font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--ink);}
+  .card .price{
+    font-family:var(--font-mono);font-weight:700;font-size:16px;color:var(--ink);
+    background:#FFF3DD;display:inline-block;padding:3px 9px;border-radius:6px;width:fit-content;
+  }
+  .card .desc{font-size:13.5px;color:var(--ink-soft);line-height:1.45;flex:1;}
+  .card .loc{font-size:12px;color:var(--ink-soft);}
+  .wa-btn{
+    margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--whatsapp);color:#fff;border:none;border-radius:10px;
+    padding:11px 12px;font-family:var(--font-body);font-weight:600;font-size:14px;
+    cursor:pointer;text-decoration:none;transition:background .15s ease;
+  }
+  .wa-btn:hover{background:var(--whatsapp-deep);}
+
+  .empty{
+    text-align:center;padding:60px 20px;color:var(--ink-soft);
+    grid-column:1/-1;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink);color:#CBD6EA;padding:36px 24px;text-align:center;}
+  footer .wordmark{color:#fff;justify-content:center;margin-bottom:8px;}
+  footer p{margin:4px 0;font-size:13px;color:#9AAAC6;}
+
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed;bottom:22px;right:22px;z-index:60;
+    width:58px;height:58px;border-radius:50%;
+    background:var(--amber);border:none;color:var(--ink);
+    font-size:28px;font-weight:700;cursor:pointer;
+    box-shadow:0 12px 24px -8px rgba(232,147,10,0.55);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .fab:hover{background:var(--amber-deep);transform:scale(1.06);}
+
+  /* ---------- MODAL ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(18,33,61,0.55);z-index:100;
+    display:none;align-items:flex-start;justify-content:center;
+    padding:40px 16px;overflow-y:auto;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:#fff;border-radius:20px;max-width:480px;width:100%;
+    padding:28px 26px 26px;position:relative;animation:pop .22s ease both;
+  }
+  @keyframes pop{ from{opacity:0;transform:translateY(8px) scale(.98);} to{opacity:1;transform:none;} }
+  .modal h2{font-family:var(--font-display);margin:0 0 4px;font-size:24px;}
+  .modal p.hint{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px;line-height:1.45;}
+  .modal .close{
+    position:absolute;top:18px;right:18px;background:none;border:none;
+    font-size:20px;cursor:pointer;color:var(--ink-soft);
+  }
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink);}
+  .field input, .field select, .field textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;
+    font-family:var(--font-body);font-size:14.5px;background:var(--cloud-bg);color:var(--ink);
+    outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{border-color:var(--sky-mid);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .submit-btn{
+    width:100%;margin-top:6px;background:var(--whatsapp);color:#fff;border:none;
+    border-radius:10px;padding:13px;font-family:var(--font-body);font-weight:700;font-size:15px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .submit-btn:hover{background:var(--whatsapp-deep);}
+
+  :focus-visible{outline:3px solid var(--sky-mid);outline-offset:2px;}
+
+  @media (max-width:720px){
+    .header-inner{flex-wrap:wrap;}
+    nav.categories{order:3;width:100%;justify-content:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
+    <nav class="categories" id="categoryNav"></nav>
+    <button class="sell-btn" onclick="openModal()">+ Sell an item</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="drift d1"></div>
+  <div class="drift d2"></div>
+  <div class="drift d3"></div>
+  <h1>Buy it. <span>Sell it.</span></h1>
+  <p class="sub">Browse what's for sale nearby, then message the seller directly — no accounts, no waiting, just a chat.</p>
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Search phones, furniture, cars…">
+    <button onclick="applyFilters()">Search</button>
+  </div>
+</section>
+
+<div class="cloud-shelf"></div>
+
+<main>
+  <div class="listings-wrap">
+    <div class="listings-head">
+      <h2 id="sectionTitle">All listings</h2>
+      <span class="count-tag" id="countTag"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
+  <p>Every deal starts with a WhatsApp message.</p>
+  <p>Contact the store owner: +265 995 999 992</p>
+</footer>
+
+<button class="fab" onclick="openModal()" aria-label="Sell an item">+</button>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="close" onclick="closeModal()" aria-label="Close">✕</button>
+    <h2>Sell on Cloud Store</h2>
+    <p class="hint">Fill this in and we'll open WhatsApp with your item details ready to send. Once we hear from you, we'll add it to the site.</p>
+    <form id="sellForm" onsubmit="sendToWhatsApp(event)">
+      <div class="field">
+        <label for="itemName">Item name</label>
+        <input type="text" id="itemName" placeholder="e.g. Samsung Galaxy A14" required>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="itemPrice">Price (MK)</label>
+          <input type="text" id="itemPrice" placeholder="e.g. 185,000" required>
+        </div>
+        <div class="field">
+          <label for="itemCategory">Category</label>
+          <select id="itemCategory" required>
+            <option value="">Choose…</option>
+            <option>Electronics &amp; Phones</option>
+            <option>Fashion &amp; Accessories</option>
+            <option>Home &amp; Furniture</option>
+            <option>Vehicles</option>
+            <option>Farm &amp; Garden</option>
+            <option>Services</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="itemDesc">Description</label>
+        <textarea id="itemDesc" placeholder="Condition, age, why you're selling…" required></textarea>
+      </div>
+      <div class="field">
+        <label for="sellerName">Your name</label>
+        <input type="text" id="sellerName" placeholder="So we know who's messaging" required>
+      </div>
+      <button type="submit" class="submit-btn">Send details on WhatsApp →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const OWNER_WHATSAPP = "265995999992"; // +265 995 999 992, international format, no leading zero or plus
+
+  const listings = [
+    {name:"Samsung Galaxy A14", price:"185,000", category:"Electronics & Phones", desc:"Barely used, 128GB, comes with charger and original box.", loc:"Area 25, Lilongwe", icon:"📱"},
+    {name:"Toyota Vitz 2010", price:"4,500,000", category:"Vehicles", desc:"Petrol, automatic, well maintained, new tyres fitted this year.", loc:"Kanengo, Lilongwe", icon:"🚗"},
+    {name:"Corner Sofa Set", price:"320,000", category:"Home & Furniture", desc:"6-seater L-shaped sofa, grey fabric, minor wear on one armrest.", loc:"Area 47, Lilongwe", icon:"🛋️"},
+    {name:"Chitenje Fabric Bundle", price:"15,000", category:"Fashion & Accessories", desc:"Set of 4 assorted prints, brand new, never worn or cut.", loc:"Old Town, Lilongwe", icon:"🧵"},
+    {name:"Solar Panel 100W", price:"95,000", category:"Electronics & Phones", desc:"Includes charge controller, used for 6 months, works perfectly.", loc:"Area 18, Lilongwe", icon:"☀️"},
+    {name:"Maize Bags (50kg)", price:"28,000", category:"Farm & Garden", desc:"Fresh harvest, dry and well stored, per 50kg bag, negotiable in bulk.", loc:"Mitundu", icon:"🌽"},
+  ];
+
+  const categories = ["All", ...new Set(listings.map(l => l.category))];
+  let activeCategory = "All";
+
+  function renderCategoryNav(){
+    const nav = document.getElementById("categoryNav");
+    nav.innerHTML = categories.map(c =>
+      `<button class="chip ${c===activeCategory?'active':''}" data-cat="${c}">${c}</button>`
+    ).join("");
+    nav.querySelectorAll(".chip").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        activeCategory = btn.dataset.cat;
+        renderCategoryNav();
+        applyFilters();
+      });
+    });
+  }
+
+  function waLink(itemName){
+    const text = encodeURIComponent(`Hi! I'm interested in "${itemName}" listed on Cloud Store. Is it still available?`);
+    return `https://wa.me/${OWNER_WHATSAPP}?text=${text}`;
+  }
+
+  function applyFilters(){
+    const q = document.getElementById("searchInput").value.trim().toLowerCase();
+    const grid = document.getElementById("grid");
+    const filtered = listings.filter(l=>{
+      const matchesCat = activeCategory === "All" || l.category === activeCategory;
+      const matchesSearch = !q || l.name.toLowerCase().includes(q) || l.desc.toLowerCase().includes(q);
+      return matchesCat && matchesSearch;
+    });
+
+    document.getElementById("sectionTitle").textContent = activeCategory === "All" ? "All listings" : activeCategory;
+    document.getElementById("countTag").textContent = "items";
+
+    if(filtered.length === 0){
+      grid.innerHTML = `<div class="empty">No listings match that search. Try another term, or <a href="#" onclick="openModal();return false;" style="color:var(--sky-mid);font-weight:600;">be the first to post one</a>.</div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(l => `
+      <div class="card">
+        <div class="thumb">${l.icon}</div>
+        <div class="body">
+          <span class="cat">${l.category}</span>
+          <h3>${l.name}</h3>
+          <span class="price">MK ${l.price}</span>
+          <p class="desc">${l.desc}</p>
+          <span class="loc">📍 ${l.loc}</span>
+          <a class="wa-btn" href="${waLink(l.name)}" target="_blank" rel="noopener">
+            Contact seller on WhatsApp
+          </a>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("searchInput").addEventListener("input", applyFilters);
+
+  function openModal(){
+    document.getElementById("overlay").classList.add("show");
+  }
+  function closeModal(){
+    document.getElementById("overlay").classList.remove("show");
+  }
+  document.getElementById("overlay").addEventListener("click", (e)=>{
+    if(e.target.id === "overlay") closeModal();
+  });
+  document.addEventListener("keydown",(e)=>{
+    if(e.key === "Escape") closeModal();
+  });
+
+  function sendToWhatsApp(e){
+    e.preventDefault();
+    const name = document.getElementById("itemName").value;
+    const price = document.getElementById("itemPrice").value;
+    const category = document.getElementById("itemCategory").value;
+    const desc = document.getElementById("itemDesc").value;
+    const seller = document.getElementById("sellerName").value;
+
+    const message =
+`New item for Cloud Store 🛍️
+Item: ${name}
+Category: ${category}
+Price: MK ${price}
+Description: ${desc}
+From: ${seller}`;
+
+    window.open(`https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank");
+    closeModal();
+    document.getElementById("sellForm").reset();
+  }
+
+  renderCategoryNav();
+  applyFilters();
+</script>
+
+</body>
+</html>
