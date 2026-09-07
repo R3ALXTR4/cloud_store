@@ -303,9 +303,19 @@
         <label for="itemDesc">Description</label>
         <textarea id="itemDesc" placeholder="Condition, age, why you're selling…" required></textarea>
       </div>
+      <div class="row2">
+        <div class="field">
+          <label for="sellerName">Your name</label>
+          <input type="text" id="sellerName" placeholder="So we know who's messaging" required>
+        </div>
+        <div class="field">
+          <label for="sellerLocation">Location</label>
+          <input type="text" id="sellerLocation" placeholder="e.g. Lilongwe, Area 25" required>
+        </div>
+      </div>
       <div class="field">
-        <label for="sellerName">Your name</label>
-        <input type="text" id="sellerName" placeholder="So we know who's messaging" required>
+        <label for="sellerPhone">Your WhatsApp number</label>
+        <input type="text" id="sellerPhone" placeholder="e.g. 265991234567 (country code, no + or 0)" required>
       </div>
       <button type="submit" class="submit-btn">Send details on WhatsApp →</button>
     </form>
@@ -402,6 +412,8 @@
     const category = document.getElementById("itemCategory").value;
     const desc = document.getElementById("itemDesc").value;
     const seller = document.getElementById("sellerName").value;
+    const location = document.getElementById("sellerLocation").value;
+    const phone = document.getElementById("sellerPhone").value;
 
     const message =
 `New item for Cloud Store 🛍️
@@ -409,7 +421,9 @@ Item: ${name}
 Category: ${category}
 Price: MK ${price}
 Description: ${desc}
-From: ${seller}`;
+Location: ${location}
+From: ${seller}
+Seller WhatsApp: ${phone}`;
 
     window.open(`https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`, "_blank");
     closeModal();
