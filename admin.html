@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Store — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --ink:#12213D; --ink-soft:#4B5875; --sky-mid:#3A5A94;
+    --amber:#FFB020; --border:#E3E9F2; --bg:#F4F7FB;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;padding:24px;}
+  .wrap{max-width:560px;margin:0 auto;}
+  h1{font-size:22px;margin-bottom:4px;}
+  p.hint{color:var(--ink-soft);font-size:13.5px;margin-top:0;margin-bottom:24px;}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;}
+  label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;margin-top:16px;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=password], input[type=number], textarea, select{
+    width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;font-family:inherit;background:var(--bg);color:var(--ink);
+  }
+  textarea{resize:vertical;min-height:70px;}
+  input[type=file]{margin-top:4px;}
+  button{
+    margin-top:20px;width:100%;padding:13px;border:none;border-radius:10px;
+    background:var(--ink);color:#fff;font-weight:700;font-size:15px;cursor:pointer;
+  }
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+  .msg{margin-top:14px;font-size:13.5px;padding:10px 12px;border-radius:8px;display:none;}
+  .msg.ok{background:#E7F7EE;color:#1B7A43;display:block;}
+  .msg.err{background:#FDEAEA;color:#B0362B;display:block;}
+  .listing-row{
+    display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--border);
+    padding:10px 0;
+  }
+  .listing-row:last-child{border-bottom:none;}
+  .listing-row img{width:52px;height:52px;object-fit:cover;border-radius:8px;background:var(--bg);}
+  .listing-row .info{flex:1;min-width:0;}
+  .listing-row .info strong{display:block;font-size:14px;}
+  .listing-row .info span{font-size:12px;color:var(--ink-soft);}
+  .listing-row button{
+    width:auto;margin-top:0;padding:7px 12px;font-size:12.5px;
+    background:#FDEAEA;color:#B0362B;font-weight:600;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cloud Store — Admin</h1>
+  <p class="hint">Private page for adding real listings with photos. Not linked anywhere on the public site.</p>
+
+  <div class="card">
+    <label for="adminPass">Admin password</label>
+    <input type="password" id="adminPass" placeholder="Enter your admin password">
+
+    <label for="name">Item name</label>
+    <input type="text" id="name" placeholder="e.g. Samsung Galaxy A14">
+
+    <label for="price">Price (MK)</label>
+    <input type="text" id="price" placeholder="e.g. 185,000">
+
+    <label for="category">Category</label>
+    <select id="category">
+      <option value="Electronics & Phones">Electronics & Phones</option>
+      <option value="Vehicles">Vehicles</option>
+      <option value="Home & Furniture">Home & Furniture</option>
+      <option value="Fashion & Accessories">Fashion & Accessories</option>
+      <option value="Farm & Garden">Farm & Garden</option>
+    </select>
+
+    <label for="desc">Description</label>
+    <textarea id="desc" placeholder="Condition, age, details..."></textarea>
+
+    <label for="loc">Location</label>
+    <input type="text" id="loc" placeholder="e.g. Area 25, Lilongwe">
+
+    <label for="phone">Seller WhatsApp number</label>
+    <input type="text" id="phone" placeholder="e.g. 265991234567">
+
+    <label for="seller">Seller name</label>
+    <input type="text" id="seller" placeholder="Seller's name">
+
+    <label for="photos">Photos (up to 4)</label>
+    <input type="file" id="photos" accept="image/*" multiple>
+
+    <button id="submitBtn" onclick="submitListing()">Add Listing</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:16px;margin-top:0;">Current listings</h2>
+    <div id="listingList">Loading…</div>
+  </div>
+</div>
+
+<script>
+  async function loadListings(){
+    const listEl = document.getElementById("listingList");
+    try{
+      const res = await fetch("/api/listings");
+      const data = await res.json();
+      if(!data.length){
+        listEl.innerHTML = '<p style="color:var(--ink-soft);font-size:13.5px;">No listings yet.</p>';
+        return;
+      }
+      listEl.innerHTML = data.map(l => `
+        <div class="listing-row">
+          <img src="${l.photos && l.photos[0] ? l.photos[0] : ''}" alt="">
+          <div class="info">
+            <strong>${l.name}</strong>
+            <span>MK ${l.price} · ${l.category}</span>
+          </div>
+          <button onclick="deleteListing('${l.id}')">Delete</button>
+        </div>
+      `).join("");
+    }catch(e){
+      listEl.innerHTML = '<p style="color:#B0362B;font-size:13.5px;">Could not load listings.</p>';
+    }
+  }
+
+  async function deleteListing(id){
+    const pass = document.getElementById("adminPass").value;
+    if(!pass){ alert("Enter the admin password first."); return; }
+    if(!confirm("Delete this listing?")) return;
+    try{
+      const res = await fetch(`/api/listings?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        headers: { "x-admin-secret": pass }
+      });
+      const data = await res.json();
+      if(!res.ok){ alert(data.error || "Delete failed."); return; }
+      loadListings();
+    }catch(e){
+      alert("Delete failed.");
+    }
+  }
+
+  async function submitListing(){
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("submitBtn");
+    msg.className = "msg";
+    msg.textContent = "";
+
+    const pass = document.getElementById("adminPass").value;
+    const name = document.getElementById("name").value.trim();
+    const price = document.getElementById("price").value.trim();
+    const category = document.getElementById("category").value;
+    const desc = document.getElementById("desc").value.trim();
+    const loc = document.getElementById("loc").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const seller = document.getElementById("seller").value.trim();
+    const photoFiles = document.getElementById("photos").files;
+
+    if(!pass || !name || !price || !category){
+      msg.className = "msg err";
+      msg.textContent = "Please fill in password, name, price, and category at least.";
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("category", category);
+    formData.append("desc", desc);
+    formData.append("loc", loc);
+    formData.append("phone", phone);
+    formData.append("seller", seller);
+    for(const file of photoFiles){
+      formData.append("photos", file);
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Uploading…";
+
+    try{
+      const res = await fetch("/api/listings", {
+        method: "POST",
+        headers: { "x-admin-secret": pass },
+        body: formData
+      });
+      const data = await res.json();
+      if(!res.ok){
+        msg.className = "msg err";
+        msg.textContent = data.error || "Something went wrong.";
+      }else{
+        msg.className = "msg ok";
+        msg.textContent = "Listing added successfully!";
+        document.getElementById("name").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("desc").value = "";
+        document.getElementById("loc").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("seller").value = "";
+        document.getElementById("photos").value = "";
+        loadListings();
+      }
+    }catch(e){
+      msg.className = "msg err";
+      msg.textContent = "Upload failed. Check your connection and try again.";
+    }finally{
+      btn.disabled = false;
+      btn.textContent = "Add Listing";
+    }
+  }
+
+  loadListings();
+</script>
+</body>
+</html>
