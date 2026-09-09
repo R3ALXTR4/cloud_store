@@ -546,7 +546,7 @@
       const firstPhoto = l.photos && l.photos[0];
       const isRealImage = firstPhoto && firstPhoto.startsWith("http");
       const thumbContent = isRealImage
-        ? `<img src="${firstPhoto}" alt="${l.name}" style="width:100%;height:100%;object-fit:cover;">`
+        ? `<img src="${firstPhoto}" alt="${l.name}" style="width:100%;height:100%;object-fit:contain;background:#EAF1FC;">`
         : (l.icon || "📦");
       return `
       <div class="card" onclick="openDetail('${listings.indexOf(l)}')">
@@ -595,7 +595,7 @@
     const photo = galleryPhotos[galleryIndex];
     const main = document.getElementById("galleryMain");
     if(photo && photo.startsWith("http")){
-      main.innerHTML = `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+      main.innerHTML = `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:contain;background:#EAF1FC;">`;
     }else{
       main.textContent = photo;
     }
