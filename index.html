@@ -60,8 +60,9 @@
     font-family:var(--font-display);font-weight:800;font-size:22px;
     letter-spacing:0.5px;color:var(--ink);display:flex;align-items:center;gap:8px;
   }
-  .wordmark .logo-icon{
-    height:44px;width:auto;display:block;
+  .wordmark .puff{
+    width:14px;height:14px;border-radius:50%;background:var(--amber);
+    box-shadow:10px 0 0 -2px var(--sky-mid);
   }
   .nav-wrap{
     position:relative;flex:1;min-width:0;display:flex;overflow:hidden;
@@ -309,7 +310,7 @@
 
 <header class="site">
   <div class="header-inner">
-    <div class="wordmark"><img src="logo-icon.png" alt="Cloud Store" class="logo-icon"></div>
+    <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
     <div class="nav-wrap">
       <nav class="categories" id="categoryNav"></nav>
       <div class="scroll-fade" aria-hidden="true"></div>
@@ -343,7 +344,7 @@
 </main>
 
 <footer>
-  <div class="wordmark"><img src="logo-icon.png" alt="Cloud Store" class="logo-icon"></div>
+  <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
   <p>Every deal starts with a WhatsApp message.</p>
   <p>Contact the store owner: +265 995 999 992</p>
   <p><a href="#" onclick="openSafety();return false;" class="footer-link">Safety Tips</a></p>
