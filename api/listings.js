@@ -29,6 +29,7 @@ async function writeListings(listings) {
     access: "public",
     contentType: "application/json",
     allowOverwrite: true,
+    addRandomSuffix: false,
   });
 }
 
