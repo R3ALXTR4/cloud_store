@@ -446,7 +446,7 @@
 <script>
   const OWNER_WHATSAPP = "265995999992"; // +265 995 999 992, international format, no leading zero or plus
 
-  const listings = [
+  const placeholderListings = [
     {name:"Samsung Galaxy A14", price:"185,000", category:"Electronics & Phones", desc:"Barely used, 128GB, comes with charger and original box.", loc:"Area 25, Lilongwe", icon:"📱", photos:["📱","📱","📱"]},
     {name:"Toyota Vitz 2010", price:"4,500,000", category:"Vehicles", desc:"Petrol, automatic, well maintained, new tyres fitted this year.", loc:"Kanengo, Lilongwe", icon:"🚗", photos:["🚗","🚗","🚗"]},
     {name:"Corner Sofa Set", price:"320,000", category:"Home & Furniture", desc:"6-seater L-shaped sofa, grey fabric, minor wear on one armrest.", loc:"Area 47, Lilongwe", icon:"🛋️", photos:["🛋️","🛋️"]},
@@ -455,7 +455,9 @@
     {name:"Maize Bags (50kg)", price:"28,000", category:"Farm & Garden", desc:"Fresh harvest, dry and well stored, per 50kg bag, negotiable in bulk.", loc:"Mitundu", icon:"🌽", photos:["🌽"]},
   ];
 
-  const categories = ["All", ...new Set(listings.map(l => l.category))];
+  let listings = [...placeholderListings];
+
+  const categories = ["All", "Electronics & Phones", "Vehicles", "Home & Furniture", "Fashion & Accessories", "Farm & Garden"];
   let activeCategory = "All";
 
   const subcategories = {
@@ -517,9 +519,10 @@
     document.querySelectorAll(".chip-wrap.open").forEach(w=>w.classList.remove("open"));
   });
 
-  function waLink(itemName){
+  function waLink(itemName, sellerPhone){
     const text = encodeURIComponent(`Hi! I'm interested in "${itemName}" listed on Cloud Store. Is it still available?`);
-    return `https://wa.me/${OWNER_WHATSAPP}?text=${text}`;
+    const target = sellerPhone && sellerPhone.trim() ? sellerPhone.trim() : OWNER_WHATSAPP;
+    return `https://wa.me/${target}?text=${text}`;
   }
 
   function applyFilters(){
@@ -539,21 +542,28 @@
       return;
     }
 
-    grid.innerHTML = filtered.map(l => `
+    grid.innerHTML = filtered.map(l => {
+      const firstPhoto = l.photos && l.photos[0];
+      const isRealImage = firstPhoto && firstPhoto.startsWith("http");
+      const thumbContent = isRealImage
+        ? `<img src="${firstPhoto}" alt="${l.name}" style="width:100%;height:100%;object-fit:cover;">`
+        : (l.icon || "📦");
+      return `
       <div class="card" onclick="openDetail('${listings.indexOf(l)}')">
-        <div class="thumb">${l.icon}</div>
+        <div class="thumb">${thumbContent}</div>
         <div class="body">
           <span class="cat">${l.category}</span>
           <h3>${l.name}</h3>
           <span class="price">MK ${l.price}</span>
           <p class="desc">${l.desc}</p>
           <span class="loc">📍 ${l.loc}</span>
-          <a class="wa-btn" href="${waLink(l.name)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          <a class="wa-btn" href="${waLink(l.name, l.phone)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
             Contact seller on WhatsApp
           </a>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
   }
 
   document.getElementById("searchInput").addEventListener("input", applyFilters);
@@ -582,7 +592,13 @@
   let galleryIndex = 0;
 
   function renderGallery(){
-    document.getElementById("galleryMain").textContent = galleryPhotos[galleryIndex];
+    const photo = galleryPhotos[galleryIndex];
+    const main = document.getElementById("galleryMain");
+    if(photo && photo.startsWith("http")){
+      main.innerHTML = `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+    }else{
+      main.textContent = photo;
+    }
     document.getElementById("galleryDots").innerHTML = galleryPhotos.map((_,i)=>
       `<span class="${i===galleryIndex?'active':''}"></span>`
     ).join("");
@@ -603,7 +619,7 @@
     document.getElementById("detailPrice").textContent = `MK ${l.price}`;
     document.getElementById("detailDesc").textContent = l.desc;
     document.getElementById("detailLoc").textContent = `📍 ${l.loc}`;
-    document.getElementById("detailWaBtn").href = waLink(l.name);
+    document.getElementById("detailWaBtn").href = waLink(l.name, l.phone);
     document.getElementById("detailOverlay").classList.add("show");
   }
   function closeDetail(){
@@ -642,8 +658,24 @@ Seller WhatsApp: ${phone}`;
     document.getElementById("sellForm").reset();
   }
 
+  async function loadRealListings(){
+    try{
+      const res = await fetch("/api/listings");
+      if(!res.ok) return;
+      const real = await res.json();
+      if(Array.isArray(real) && real.length){
+        listings = real;
+      }
+    }catch(e){
+      console.warn("Could not load live listings, showing sample items instead.", e);
+    }
+    renderCategoryNav();
+    applyFilters();
+  }
+
   renderCategoryNav();
   applyFilters();
+  loadRealListings();
 </script>
 
 </body>
