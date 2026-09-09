@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CLOUD STORE — Buy &amp; Sell on WhatsApp</title>
 <meta name="google-site-verification" content="ov4parD9oKwBfWDQQBhRSdj-pKKoJOrWbOMaWnrKjDk" />
+<meta name="description" content="Cloud Store is a local directory to buy and sell items and services. Browse listings by category and message sellers directly on WhatsApp — no middleman, no fees to browse.">
+
+<!-- Social share preview -->
+<meta property="og:title" content="Cloud Store — Buy & Sell on WhatsApp">
+<meta property="og:description" content="Browse local listings and message sellers directly on WhatsApp. No middleman, no fees to browse.">
+<meta property="og:image" content="https://cloud-store-ten.vercel.app/og-image.png">
+<meta property="og:url" content="https://cloud-store-ten.vercel.app">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cloud Store — Buy & Sell on WhatsApp">
+<meta name="twitter:description" content="Browse local listings and message sellers directly on WhatsApp.">
+<meta name="twitter:image" content="https://cloud-store-ten.vercel.app/og-image.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -44,23 +60,45 @@
     font-family:var(--font-display);font-weight:800;font-size:22px;
     letter-spacing:0.5px;color:var(--ink);display:flex;align-items:center;gap:8px;
   }
-  .wordmark .puff{
-    width:14px;height:14px;border-radius:50%;background:var(--amber);
-    box-shadow:10px 0 0 -2px var(--sky-mid);
+  .wordmark .logo-icon{
+    height:44px;width:auto;display:block;
+  }
+  .nav-wrap{
+    position:relative;flex:1;min-width:0;display:flex;overflow:hidden;
   }
   nav.categories{
-    display:flex;gap:8px;overflow-x:auto;flex:1;justify-content:center;
-    scrollbar-width:none;
+    display:flex;gap:8px;overflow-x:auto;flex:1;min-width:0;justify-content:flex-start;
+    scrollbar-width:none;padding-right:28px;
   }
   nav.categories::-webkit-scrollbar{display:none;}
+  .chip-wrap{position:relative;display:inline-block;flex:0 0 auto;}
+  .scroll-fade{
+    position:absolute;top:0;right:0;bottom:0;width:36px;
+    background:linear-gradient(to right, rgba(244,247,251,0), rgba(244,247,251,0.95));
+    pointer-events:none;
+  }
   .chip{
     font-family:var(--font-body);font-weight:600;font-size:13.5px;
     padding:8px 16px;border-radius:999px;border:1px solid var(--border);
     background:#fff;color:var(--ink-soft);white-space:nowrap;cursor:pointer;
-    transition:all .18s ease;
   }
-  .chip:hover{border-color:var(--sky-mid);color:var(--sky-mid);}
   .chip.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  /* ---------- CATEGORY DROPDOWN ---------- */
+  .chip .caret{margin-left:4px;font-size:10px;display:inline-block;}
+  .chip-dropdown{
+    position:absolute;top:calc(100% + 8px);left:0;min-width:190px;
+    background:#fff;border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 16px 30px -14px rgba(18,33,61,0.28);
+    padding:6px;display:none;flex-direction:column;gap:2px;z-index:40;
+  }
+  .chip-wrap.open .chip-dropdown{display:flex;}
+  .sub-item{
+    background:none;border:none;text-align:left;padding:9px 12px;border-radius:8px;
+    font-family:var(--font-body);font-size:13.5px;color:var(--ink-soft);cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .sub-item:hover{background:var(--cloud-bg);color:var(--sky-mid);}
   .sell-btn{
     font-family:var(--font-body);font-weight:600;font-size:14px;
     background:var(--amber);color:var(--ink);border:none;border-radius:999px;
@@ -134,7 +172,7 @@
   }
   .card{
     background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;
-    display:flex;flex-direction:column;
+    display:flex;flex-direction:column;cursor:pointer;
     transition:transform .18s ease, box-shadow .18s ease;
     animation:rise .5s ease both;
   }
@@ -169,10 +207,47 @@
     grid-column:1/-1;
   }
 
+  /* ---------- DETAIL GALLERY ---------- */
+  .detail-modal{max-width:520px;}
+  .gallery{position:relative;margin:-28px -26px 18px;border-radius:20px 20px 0 0;overflow:hidden;background:var(--cloud-bg);}
+  .gallery-main{height:220px;display:flex;align-items:center;justify-content:center;font-size:80px;background:linear-gradient(135deg,#EAF1FC,#F4F7FB);}
+  .gallery-dots{position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:6px;}
+  .gallery-dots span{width:7px;height:7px;border-radius:50%;background:rgba(18,33,61,0.25);}
+  .gallery-dots span.active{background:var(--sky-mid);}
+  .gallery-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(255,255,255,0.85);border:none;border-radius:50%;
+    width:34px;height:34px;font-size:20px;cursor:pointer;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .gallery-nav.prev{left:10px;}
+  .gallery-nav.next{right:10px;}
+  .detail-modal .cat{display:inline-block;margin-bottom:6px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--sky-mid);}
+  .detail-modal h2{margin-bottom:6px;}
+  .detail-modal .price{
+    display:block;margin-bottom:10px;font-family:var(--font-mono);font-weight:700;font-size:16px;color:var(--ink);
+    background:#FFF3DD;padding:3px 9px;border-radius:6px;width:fit-content;
+  }
+  .detail-modal .desc{margin-bottom:10px;font-size:14px;color:var(--ink-soft);line-height:1.5;}
+  .detail-modal .loc{display:block;margin-bottom:18px;font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---------- SAFETY (modal) ---------- */
+  .safety-modal ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+  .safety-modal li{font-size:14px;line-height:1.5;color:var(--ink-soft);padding-left:18px;position:relative;}
+  .safety-modal li::before{content:"•";position:absolute;left:0;color:var(--sky-mid);font-weight:700;}
+  .safety-disclaimer{
+    margin:18px 0 0;padding:14px 16px;border-radius:10px;
+    background:#12213D;color:#FFD98A;
+    font-family:var(--font-mono);font-size:12.5px;font-weight:700;
+    letter-spacing:0.03em;line-height:1.6;
+  }
+
   /* ---------- FOOTER ---------- */
   footer{background:var(--ink);color:#CBD6EA;padding:36px 24px;text-align:center;}
   footer .wordmark{color:#fff;justify-content:center;margin-bottom:8px;}
   footer p{margin:4px 0;font-size:13px;color:#9AAAC6;}
+  footer .footer-link{color:#CBD6EA;text-decoration:underline;font-weight:600;}
+  footer .copyright{margin-top:14px;font-size:11.5px;color:#6E7C99;}
 
   /* ---------- FAB ---------- */
   .fab{
@@ -199,6 +274,8 @@
   @keyframes pop{ from{opacity:0;transform:translateY(8px) scale(.98);} to{opacity:1;transform:none;} }
   .modal h2{font-family:var(--font-display);margin:0 0 4px;font-size:24px;}
   .modal p.hint{color:var(--ink-soft);font-size:13.5px;margin:0 0 20px;line-height:1.45;}
+  .payment-note{background:#F0F6FF;border:1px solid #CFE0F5;border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink);margin:0 0 20px;}
+  .payment-note strong{color:var(--sky-mid);}
   .modal .close{
     position:absolute;top:18px;right:18px;background:none;border:none;
     font-size:20px;cursor:pointer;color:var(--ink-soft);
@@ -224,7 +301,7 @@
 
   @media (max-width:720px){
     .header-inner{flex-wrap:wrap;}
-    nav.categories{order:3;width:100%;justify-content:flex-start;}
+    .nav-wrap{order:3;width:100%;flex:1 1 100%;}
   }
 </style>
 </head>
@@ -232,8 +309,11 @@
 
 <header class="site">
   <div class="header-inner">
-    <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
-    <nav class="categories" id="categoryNav"></nav>
+    <div class="wordmark"><img src="logo-icon.png" alt="Cloud Store" class="logo-icon"></div>
+    <div class="nav-wrap">
+      <nav class="categories" id="categoryNav"></nav>
+      <div class="scroll-fade" aria-hidden="true"></div>
+    </div>
     <button class="sell-btn" onclick="openModal()">+ Sell an item</button>
   </div>
 </header>
@@ -263,10 +343,44 @@
 </main>
 
 <footer>
-  <div class="wordmark"><span class="puff"></span>CLOUD STORE</div>
+  <div class="wordmark"><img src="logo-icon.png" alt="Cloud Store" class="logo-icon"></div>
   <p>Every deal starts with a WhatsApp message.</p>
   <p>Contact the store owner: +265 995 999 992</p>
+  <p><a href="#" onclick="openSafety();return false;" class="footer-link">Safety Tips</a></p>
+  <p class="copyright">© 2026 Cloud Store. All rights reserved.</p>
 </footer>
+
+<div class="overlay" id="safetyOverlay">
+  <div class="modal safety-modal">
+    <button class="close" onclick="closeSafety()" aria-label="Close">✕</button>
+    <h2>BUYING &amp; SELLING SAFELY</h2>
+    <ul>
+      <li>MEET IN A PUBLIC PLACE FOR HANDOVERS WHENEVER POSSIBLE.</li>
+      <li>INSPECT THE ITEM IN PERSON BEFORE PAYING.</li>
+      <li>NEVER SEND MOBILE MONEY TO A SELLER BEFORE SEEING THE ITEM, UNLESS YOU KNOW AND TRUST THEM.</li>
+      <li>KEEP THE CONVERSATION ON WHATSAPP — IT GIVES YOU A WRITTEN RECORD IF SOMETHING GOES WRONG.</li>
+    </ul>
+    <p class="safety-disclaimer">CLOUD STORE IS A LISTINGS DIRECTORY ONLY. WE'RE NOT PART OF THE TRANSACTION BETWEEN BUYER AND SELLER.</p>
+  </div>
+</div>
+
+<div class="overlay" id="detailOverlay">
+  <div class="modal detail-modal">
+    <button class="close" onclick="closeDetail()" aria-label="Close">✕</button>
+    <div class="gallery" id="gallery">
+      <div class="gallery-main" id="galleryMain"></div>
+      <div class="gallery-dots" id="galleryDots"></div>
+      <button class="gallery-nav prev" onclick="galleryStep(-1)" aria-label="Previous photo">‹</button>
+      <button class="gallery-nav next" onclick="galleryStep(1)" aria-label="Next photo">›</button>
+    </div>
+    <span class="cat" id="detailCat"></span>
+    <h2 id="detailName"></h2>
+    <span class="price" id="detailPrice"></span>
+    <p class="desc" id="detailDesc"></p>
+    <span class="loc" id="detailLoc"></span>
+    <a class="wa-btn" id="detailWaBtn" target="_blank" rel="noopener">Contact seller on WhatsApp</a>
+  </div>
+</div>
 
 <button class="fab" onclick="openModal()" aria-label="Sell an item">+</button>
 
@@ -274,7 +388,14 @@
   <div class="modal">
     <button class="close" onclick="closeModal()" aria-label="Close">✕</button>
     <h2>Sell on Cloud Store</h2>
-    <p class="hint">Fill this in and we'll open WhatsApp with your item details ready to send. Once we hear from you, we'll add it to the site.</p>
+    <p class="hint">Fill this in and we'll open WhatsApp with your item details ready to send. Once you reach us, attach 2–4 clear photos from different angles — it's what buyers trust the most. We'll add it to the site once we hear from you.</p>
+    <div class="payment-note">
+      <strong>Listing fee:</strong> A small fee applies to get listed — we'll agree on the amount with you directly on WhatsApp once we receive your details.
+      <br><br>
+      <strong>Pay via:</strong><br>
+      📱 Airtel Money: 0995 999 992<br>
+      📱 TNM Mpamba: 0888 201 650
+    </div>
     <form id="sellForm" onsubmit="sendToWhatsApp(event)">
       <div class="field">
         <label for="itemName">Item name</label>
@@ -326,30 +447,75 @@
   const OWNER_WHATSAPP = "265995999992"; // +265 995 999 992, international format, no leading zero or plus
 
   const listings = [
-    {name:"Samsung Galaxy A14", price:"185,000", category:"Electronics & Phones", desc:"Barely used, 128GB, comes with charger and original box.", loc:"Area 25, Lilongwe", icon:"📱"},
-    {name:"Toyota Vitz 2010", price:"4,500,000", category:"Vehicles", desc:"Petrol, automatic, well maintained, new tyres fitted this year.", loc:"Kanengo, Lilongwe", icon:"🚗"},
-    {name:"Corner Sofa Set", price:"320,000", category:"Home & Furniture", desc:"6-seater L-shaped sofa, grey fabric, minor wear on one armrest.", loc:"Area 47, Lilongwe", icon:"🛋️"},
-    {name:"Chitenje Fabric Bundle", price:"15,000", category:"Fashion & Accessories", desc:"Set of 4 assorted prints, brand new, never worn or cut.", loc:"Old Town, Lilongwe", icon:"🧵"},
-    {name:"Solar Panel 100W", price:"95,000", category:"Electronics & Phones", desc:"Includes charge controller, used for 6 months, works perfectly.", loc:"Area 18, Lilongwe", icon:"☀️"},
-    {name:"Maize Bags (50kg)", price:"28,000", category:"Farm & Garden", desc:"Fresh harvest, dry and well stored, per 50kg bag, negotiable in bulk.", loc:"Mitundu", icon:"🌽"},
+    {name:"Samsung Galaxy A14", price:"185,000", category:"Electronics & Phones", desc:"Barely used, 128GB, comes with charger and original box.", loc:"Area 25, Lilongwe", icon:"📱", photos:["📱","📱","📱"]},
+    {name:"Toyota Vitz 2010", price:"4,500,000", category:"Vehicles", desc:"Petrol, automatic, well maintained, new tyres fitted this year.", loc:"Kanengo, Lilongwe", icon:"🚗", photos:["🚗","🚗","🚗"]},
+    {name:"Corner Sofa Set", price:"320,000", category:"Home & Furniture", desc:"6-seater L-shaped sofa, grey fabric, minor wear on one armrest.", loc:"Area 47, Lilongwe", icon:"🛋️", photos:["🛋️","🛋️"]},
+    {name:"Chitenje Fabric Bundle", price:"15,000", category:"Fashion & Accessories", desc:"Set of 4 assorted prints, brand new, never worn or cut.", loc:"Old Town, Lilongwe", icon:"🧵", photos:["🧵","🧵"]},
+    {name:"Solar Panel 100W", price:"95,000", category:"Electronics & Phones", desc:"Includes charge controller, used for 6 months, works perfectly.", loc:"Area 18, Lilongwe", icon:"☀️", photos:["☀️","☀️"]},
+    {name:"Maize Bags (50kg)", price:"28,000", category:"Farm & Garden", desc:"Fresh harvest, dry and well stored, per 50kg bag, negotiable in bulk.", loc:"Mitundu", icon:"🌽", photos:["🌽"]},
   ];
 
   const categories = ["All", ...new Set(listings.map(l => l.category))];
   let activeCategory = "All";
 
+  const subcategories = {
+    "Electronics & Phones": ["Phones", "Laptops & Computers", "TVs & Audio", "Solar & Power", "Accessories"],
+    "Vehicles": ["Cars", "Motorbikes", "Bicycles", "Spare Parts"],
+    "Home & Furniture": ["Sofas & Seating", "Beds & Bedroom", "Kitchen", "Décor"],
+    "Fashion & Accessories": ["Clothing", "Shoes", "Bags", "Fabric & Chitenje"],
+    "Farm & Garden": ["Crops & Produce", "Livestock", "Tools & Equipment", "Seeds"],
+  };
+
   function renderCategoryNav(){
     const nav = document.getElementById("categoryNav");
-    nav.innerHTML = categories.map(c =>
-      `<button class="chip ${c===activeCategory?'active':''}" data-cat="${c}">${c}</button>`
-    ).join("");
+    nav.innerHTML = categories.map(c => {
+      const subs = subcategories[c];
+      const dropdown = subs ? `
+        <div class="chip-dropdown">
+          ${subs.map(s => `<button class="sub-item" data-cat="${c}" data-sub="${s}">${s}</button>`).join("")}
+        </div>` : "";
+      const caret = subs ? `<span class="caret" data-toggle="${c}">▾</span>` : "";
+      return `
+        <div class="chip-wrap">
+          <button class="chip ${c===activeCategory?'active':''}" data-cat="${c}">${c}${caret}</button>
+          ${dropdown}
+        </div>`;
+    }).join("");
+
     nav.querySelectorAll(".chip").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
+      btn.addEventListener("click", (e)=>{
+        if(e.target.classList.contains("caret")) return;
         activeCategory = btn.dataset.cat;
+        document.getElementById("searchInput").value = "";
+        renderCategoryNav();
+        applyFilters();
+      });
+    });
+
+    nav.querySelectorAll(".caret").forEach(caret=>{
+      caret.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        const wrap = caret.closest(".chip-wrap");
+        const wasOpen = wrap.classList.contains("open");
+        nav.querySelectorAll(".chip-wrap").forEach(w=>w.classList.remove("open"));
+        if(!wasOpen) wrap.classList.add("open");
+      });
+    });
+
+    nav.querySelectorAll(".sub-item").forEach(btn=>{
+      btn.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        activeCategory = btn.dataset.cat;
+        document.getElementById("searchInput").value = btn.dataset.sub;
         renderCategoryNav();
         applyFilters();
       });
     });
   }
+
+  document.addEventListener("click", ()=>{
+    document.querySelectorAll(".chip-wrap.open").forEach(w=>w.classList.remove("open"));
+  });
 
   function waLink(itemName){
     const text = encodeURIComponent(`Hi! I'm interested in "${itemName}" listed on Cloud Store. Is it still available?`);
@@ -374,7 +540,7 @@
     }
 
     grid.innerHTML = filtered.map(l => `
-      <div class="card">
+      <div class="card" onclick="openDetail('${listings.indexOf(l)}')">
         <div class="thumb">${l.icon}</div>
         <div class="body">
           <span class="cat">${l.category}</span>
@@ -382,7 +548,7 @@
           <span class="price">MK ${l.price}</span>
           <p class="desc">${l.desc}</p>
           <span class="loc">📍 ${l.loc}</span>
-          <a class="wa-btn" href="${waLink(l.name)}" target="_blank" rel="noopener">
+          <a class="wa-btn" href="${waLink(l.name)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
             Contact seller on WhatsApp
           </a>
         </div>
@@ -401,8 +567,54 @@
   document.getElementById("overlay").addEventListener("click", (e)=>{
     if(e.target.id === "overlay") closeModal();
   });
+
+  function openSafety(){
+    document.getElementById("safetyOverlay").classList.add("show");
+  }
+  function closeSafety(){
+    document.getElementById("safetyOverlay").classList.remove("show");
+  }
+  document.getElementById("safetyOverlay").addEventListener("click", (e)=>{
+    if(e.target.id === "safetyOverlay") closeSafety();
+  });
+
+  let galleryPhotos = [];
+  let galleryIndex = 0;
+
+  function renderGallery(){
+    document.getElementById("galleryMain").textContent = galleryPhotos[galleryIndex];
+    document.getElementById("galleryDots").innerHTML = galleryPhotos.map((_,i)=>
+      `<span class="${i===galleryIndex?'active':''}"></span>`
+    ).join("");
+  }
+
+  function galleryStep(dir){
+    galleryIndex = (galleryIndex + dir + galleryPhotos.length) % galleryPhotos.length;
+    renderGallery();
+  }
+
+  function openDetail(index){
+    const l = listings[index];
+    galleryPhotos = l.photos && l.photos.length ? l.photos : [l.icon];
+    galleryIndex = 0;
+    renderGallery();
+    document.getElementById("detailCat").textContent = l.category;
+    document.getElementById("detailName").textContent = l.name;
+    document.getElementById("detailPrice").textContent = `MK ${l.price}`;
+    document.getElementById("detailDesc").textContent = l.desc;
+    document.getElementById("detailLoc").textContent = `📍 ${l.loc}`;
+    document.getElementById("detailWaBtn").href = waLink(l.name);
+    document.getElementById("detailOverlay").classList.add("show");
+  }
+  function closeDetail(){
+    document.getElementById("detailOverlay").classList.remove("show");
+  }
+  document.getElementById("detailOverlay").addEventListener("click", (e)=>{
+    if(e.target.id === "detailOverlay") closeDetail();
+  });
+
   document.addEventListener("keydown",(e)=>{
-    if(e.key === "Escape") closeModal();
+    if(e.key === "Escape"){ closeModal(); closeSafety(); closeDetail(); }
   });
 
   function sendToWhatsApp(e){
